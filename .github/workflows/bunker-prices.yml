@@ -1,0 +1,44 @@
+name: Bunker Prices Scraper
+
+on:
+  schedule:
+    # Run every 8 hours (at 00:00, 08:00, and 16:00 UTC)
+    - cron: '0 0,8,16 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  scrape-prices:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write  # Allow the action to commit changes
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        
+    - name: Run scraper
+      run: python scrape_bunker_prices.py
+      
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action Bot"
+        git add .
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update bunker prices - $(date -u +'%d/%m/%Y %H:%M') UTC"
+          git push
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
