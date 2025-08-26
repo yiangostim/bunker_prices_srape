@@ -2,8 +2,8 @@ name: Bunker Prices Scraper
 
 on:
   schedule:
-    # Run every 8 hours (at 00:00, 08:00, and 16:00 UTC)
-    - cron: '0 0,8,16 * * *'
+    # Runs every 6 hours (at 00:00, 06:00, 12:00, 18:00 UTC) - synced with other scraper
+    - cron: '0 */6 * * *'
   workflow_dispatch: # Allow manual trigger
 
 jobs:
